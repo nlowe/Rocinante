@@ -4,6 +4,6 @@ dotnet: 1.0.1
 dist: trusty
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y mono-complete
+  - sudo apt-get install -y mono-complete ca-certificates-mono
 script:
   - ./build.sh
