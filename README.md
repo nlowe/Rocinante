@@ -5,6 +5,8 @@ A static-site generator built on dotnet core - WIP
 You need a recent dotnet core version, specifically one that supports
 `netstandard1.6`, `netcoreapp1.1`, and can build `csproj` style projects
 
+If you are on linux, you will need `mono` for the cake script (I believe they're switching to dotnet core in the future)
+
 Invoke the cake script to build the project and run tests
 
 ```bash
