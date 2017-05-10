@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Rocinante.Types/Rocinante.Types.csproj" />
+  </ItemGroup>
+
+</Project>
