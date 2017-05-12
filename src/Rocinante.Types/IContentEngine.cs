@@ -2,8 +2,16 @@ namespace Rocinante.Types
 {
     public interface IContentEngine
     {
-         string Identifier { get;}
+        /// <summary>
+        /// The identifier for the content engine
+        /// </summary>
+        string Identifier { get;}
 
-         string Render(Post post);
+        /// <summary>
+        /// Render the specified post to html
+        /// </summary>
+        /// <param name="post">The post to render</param>
+        /// <returns>The html representation of the post</returns>
+        string Render(Post post);
     }
 }

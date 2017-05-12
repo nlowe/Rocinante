@@ -11,6 +11,11 @@ namespace Rocinante.Types
         public string Title { get; set; } = "Untitled Post";
 
         /// <summary>
+        /// The title of the post in the URL. If null or empty, <see cref="Title" /> is used instead
+        /// </summary>
+        public string UrlTitle { get; set; } = null;
+
+        /// <summary>
         /// The date the post was published
         /// </summary>
         public DateTime PublishedOn { get; set; } = DateTime.Now;

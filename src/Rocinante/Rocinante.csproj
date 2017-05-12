@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="System.Runtime" Version="4.3.0" />
     <PackageReference Include="Jil" Version="2.15.0" />
+    <PackageReference Include="NLog" Version="5.0.0-beta07" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Rocinante.Types/Rocinante.Types.csproj" />

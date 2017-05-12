@@ -9,4 +9,8 @@
     <ProjectReference Include="../Rocinante.Types/Rocinante.Types.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.11.0" />
+  </ItemGroup>
+
 </Project>

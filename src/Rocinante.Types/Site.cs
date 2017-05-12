@@ -37,6 +37,9 @@ namespace Rocinante.Types
         /// </summary>
         public string DefaultPublishLocation { get; set; } = "public";
 
+        /// <summary>
+        /// The date format for post URLs
+        /// </summary>
         public string PostDateUrlFormat { get; set; } = "yyyy/MM/dd";
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Rocinante.Types
         {
             return Root.AppendIfMissing("/") +
                 post.PublishedOn.ToString(PostDateUrlFormat).AppendIfMissing("/") +
-                UrlEncoder.Default.Encode(post.Title);
+                UrlEncoder.Default.Encode(post.UrlTitle.OrBlank() ?? post.Title);
         }
     }
 }
