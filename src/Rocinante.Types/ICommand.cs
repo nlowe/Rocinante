@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rocinante.Commands
+namespace Rocinante.Types
 {
     public interface ICommand
     {

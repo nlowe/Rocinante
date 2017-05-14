@@ -40,7 +40,7 @@ namespace Rocinante.Types
         /// <summary>
         /// The date format for post URLs
         /// </summary>
-        public string PostDateUrlFormat { get; set; } = "yyyy/MM/dd";
+        public string PostDateUrlFormat { get; set; } = "yyyy/MM";
 
         /// <summary>
         /// Any plugins to pull from nuget for use in site rendering

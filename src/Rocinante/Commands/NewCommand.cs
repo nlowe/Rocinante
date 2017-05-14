@@ -2,16 +2,23 @@ using System;
 using System.IO;
 using Rocinante.Types;
 using Jil;
+using NLog;
 
 namespace Rocinante.Commands
 {
     public class NewCommand : ICommand
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         public string Name => "new";
 
         public string Description => "Create a new site in the current directory";
 
-        public string Help => string.Empty;
+        public string Help => @"
+Initializes the current directory with the default site template:
+* A folder for posts
+* site.json: The configuration for the site
+";
 
         public void Execute(string[] args)
         {
@@ -22,15 +29,22 @@ namespace Rocinante.Commands
 
             MakeDirectoryIfNotExists(posts);
 
-            using(var writer = new StreamWriter(new FileStream("", FileMode.OpenOrCreate)))
+            Log.Info("Creating default site configuration");
+            using(var writer = new StreamWriter(new FileStream(Path.Combine(root, "site.json"), FileMode.OpenOrCreate)))
             {
-                JSON.Serialize(site, writer);
+                JSON.Serialize(site, writer, Options.ISO8601PrettyPrintExcludeNulls);
             }
+
+            Log.Info("Site created at {0}", root);
         }
 
         private void MakeDirectoryIfNotExists(string path)
         {
-            if(!Directory.Exists(path)) Directory.CreateDirectory(path);
+            if(!Directory.Exists(path))
+            {
+                Log.Info("Creating posts directory");
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }
