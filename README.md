@@ -1,4 +1,4 @@
-# Rocinante [![Build Status](https://travis-ci.org/nlowe/Rocinante.svg?branch=master)](https://travis-ci.org/nlowe/Rocinante)
+# Rocinante [![Build Status](https://travis-ci.org/roci-gen/Rocinante.svg?branch=master)](https://travis-ci.org/roci-gen/Rocinante)
 A static-site generator built on dotnet core - WIP
 
 ## Building
