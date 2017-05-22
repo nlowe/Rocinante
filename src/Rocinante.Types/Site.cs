@@ -23,6 +23,13 @@ namespace Rocinante.Types
         public string Author { get; set; } = "Anonymous";
 
         /// <summary>
+        /// The theme for the site. If no protocol is specified, it is assumed the theme is a github repo that should be cloned.
+        /// 
+        /// Supported protocols: github
+        /// </summary>
+        public string Theme { get; set; } = "roci-gen/roci-theme-default";
+
+        /// <summary>
         /// The root of the site
         /// </summary>
         public string Root { get; set; } = "/";

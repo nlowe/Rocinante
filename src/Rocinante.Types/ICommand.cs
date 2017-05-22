@@ -8,6 +8,6 @@ namespace Rocinante.Types
         string Description { get; }
         string Help { get; }
 
-        void Execute(string[] args);
+        void Execute(string[] args, IPublishContext ctx);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Autofac.Features.ResolveAnything;
 using Microsoft.Extensions.DependencyModel;
 using NLog;
 using NLog.Config;
@@ -14,91 +16,83 @@ namespace Rocinante
 {
     class Program : IDisposable
     {
-        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private static readonly CommandMap CommandMap = new CommandMap();
+        private static readonly Logger Log = LogManager.GetLogger("roci");
 
         private static IContainer Container;
 
         static void Main(string[] args)
         {
-            ConfigureLogging(LogLevel.Trace);
-            var builder = ConfigureDependencies();
-            Container = ConfigureCommands(builder);
+            var logLevel = LogLevel.Info;
+            var cmdIndex = 0;
+
+            if(args.Length > 0)
+            {
+                foreach(var arg in args)
+                {
+                    if((arg.StartsWith("-v") || arg.StartsWith("--verbose")) && arg.Contains('='))
+                    {
+                        var parts = arg.Split('=');
+                        if(parts.Length != 2)
+                        {
+                            Log.Fatal("Invalid syntax for verbosity parameter");
+                            Environment.Exit(ExitCodes.SYNTAX);
+                        }
+
+                        logLevel = LogLevel.FromString(parts[1]);
+                        cmdIndex++;
+                    }
+                }
+            }
+
+            ConfigureLogging(logLevel);
+            Container = ConfigureDependencies();
+            var ctx = ConfigurePlugins(Container);
 
             if(args.Length == 0)
             {
-                CommandMap["help"].Execute(new string[]{});
-                return;
+                new HelpCommand().Execute(new string[]{}, ctx);
+                Environment.Exit(ExitCodes.SUCCESS);
             }
 
-            ICommand cmd;
-            if(!CommandMap.TryGetValue(args[0], out cmd))
+            Log.Trace("Looking for command {0}", args[cmdIndex]);
+            var cmd = ctx.Commands.FirstOrDefault(c => c.Name.Equals(args[cmdIndex], StringComparison.CurrentCultureIgnoreCase));
+            if(cmd == null)
             {
-                Log.Fatal("Unknown command {0}", args[0]);
-                Environment.Exit(-1);
+                Log.Fatal("Unknown command {0}", args[cmdIndex]);
+                Environment.Exit(ExitCodes.UNKNOWN_COMMAND);
             }
 
             Log.Trace("Executing command {0}", cmd.Name);
 
-            var remainingArgs = new string[args.Length - 1];
-            Array.Copy(args, 1, remainingArgs, 0, args.Length - 1);
-            cmd.Execute(remainingArgs);
+            var remainingArgs = new string[args.Length - 1 - cmdIndex];
+            Array.Copy(args, cmdIndex + 1, remainingArgs, 0, args.Length - 1 - cmdIndex);
+            cmd.Execute(remainingArgs, ctx);
         }
 
-        private static IContainer ConfigureCommands(ContainerBuilder builder)
+        private static IPublishContext ConfigurePlugins(IContainer container)
         {
-            Log.Debug("Registering Commands");
-            var commands = new List<Type>();
+            Log.Debug("Registering Commands And Plugins");
+            var ctx = new PublishContext(container);
 
-            Log.Trace("Registering Core Commands");
+            Log.Trace("Registering Core Commands");            
+            new DefaultCommandPlugin().OnLoad(ctx);
 
-            commands.AddRange(typeof(HelpCommand).GetTypeInfo().Assembly.GetExportedTypes().Where(t => typeof(ICommand).IsAssignableFrom(t) && t.GetTypeInfo().IsClass));
-
-            Log.Trace("Inspecting Runtime Libraries");
-            foreach(var assembly in DependencyContext.Default.RuntimeLibraries.SelectMany(lib => lib.Assemblies))
+            var pluginPath = Path.Combine(Directory.GetCurrentDirectory(), "_plugins");
+            if(Directory.Exists(pluginPath))
             {
-                Log.Trace("Inspecting Assembly {0}", assembly.Name);
-                var loadedAssembly = Assembly.Load(assembly.Name);
-                
-                commands.AddRange(loadedAssembly.GetExportedTypes().Where((t => typeof(ICommand).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)));
+                Log.Trace("Loading plugins from {0}", pluginPath);
             }
 
-            Log.Trace("Inspecting Compile Libraries");
-            foreach(var assembly in DependencyContext.Default.CompileLibraries.SelectMany(lib => lib.Assemblies))
-            {
-                Log.Trace("Inspecting Assembly {0}", assembly);
-                var loadedAssembly = Assembly.Load(new AssemblyName(assembly));
-                
-                commands.AddRange(loadedAssembly.GetExportedTypes().Where((t => typeof(ICommand).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)));
-            }
-
-            if(commands.Count == 0) Log.Warn("No commands found. Is Rocinante installed correctly?");
-
-            foreach(var type in commands)
-            {
-                builder.RegisterType(type);
-            }
-
-            var container = builder.Build();
-
-            foreach(var cmd in commands)
-            {
-                var instance = (ICommand) container.Resolve(cmd);
-
-                Log.Trace("Registered {0} as {1}", cmd.Name, instance.Name);
-                CommandMap.Add(instance.Name.ToLower(), instance);
-            }
-
-            return container;
+            return ctx;
         }
 
-        private static ContainerBuilder ConfigureDependencies()
+        private static IContainer ConfigureDependencies()
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(CommandMap).ExternallyOwned();
+            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
-            return builder;
+            return builder.Build();
         }
 
         private static void ConfigureLogging(LogLevel verbosity)

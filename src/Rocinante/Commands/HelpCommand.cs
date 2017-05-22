@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NLog;
 using Rocinante.Types;
 using Rocinante.Types.Extensions;
@@ -15,33 +16,26 @@ namespace Rocinante.Commands
 
         public string Help { get; } = string.Empty;
 
-        private readonly CommandMap RegisteredCommands;
-
-        public HelpCommand(CommandMap registeredCommands)
-        {
-            RegisteredCommands = registeredCommands;
-        }
-
-        public void Execute(string[] args)
+        public void Execute(string[] args, IPublishContext ctx)
         {
             if (args.Length == 0)
             {
                 Log.Info("Supported Commands:");
 
-                foreach(var cmd in RegisteredCommands.Values)
+                foreach(var cmd in ctx.Commands)
                 {
                     Log.Info("\t{0}: {1}", cmd.Name, cmd.Description);
                 }
             }
             else
             {
-                ICommand cmd;
-                if(!RegisteredCommands.TryGetValue(args[0], out cmd))
+                var cmd = ctx.Commands.FirstOrDefault(c => c.Name.Equals(args[0], StringComparison.CurrentCultureIgnoreCase));
+                if(cmd == null)
                 {
-                    Log.Fatal("Unknown command: {0}", args[0]);
-                    Environment.Exit(-1);
+                    Log.Fatal("Unknown command {0}", args[0]);
+                    Environment.Exit(ExitCodes.UNKNOWN_COMMAND);
                 }
-
+                
                 Log.Info("{0}: {1}", cmd.Name, cmd.Description);
                 if(!cmd.Help.IsNullOrEmpty())
                 {

@@ -1,4 +1,5 @@
 var target = Argument("target", "Default");
+var skipTests = Argument("skipTests", false);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -30,6 +31,7 @@ Task("Build")
 });
 
 Task("Test")
+    .WithCriteria(!skipTests)
     .IsDependentOn("Build")
     .Does(() =>
 {

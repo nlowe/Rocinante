@@ -20,7 +20,7 @@ Initializes the current directory with the default site template:
 * site.json: The configuration for the site
 ";
 
-        public void Execute(string[] args)
+        public void Execute(string[] args, IPublishContext ctx)
         {
             var site = new Site();
 
