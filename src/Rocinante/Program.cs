@@ -44,9 +44,9 @@ namespace Rocinante
                 }
             }
 
-            ConfigureLogging(logLevel);
-            Container = ConfigureDependencies();
-            var ctx = ConfigurePlugins(Container);
+            LoggingConfig.ConfigureLogging(logLevel);
+            Container = DependencyConfig.ConfigureDependencies();
+            var ctx = CorePluginConfig.ConfigurePlugins(Container);
 
             if(args.Length == 0)
             {
@@ -67,61 +67,6 @@ namespace Rocinante
             var remainingArgs = new string[args.Length - 1 - cmdIndex];
             Array.Copy(args, cmdIndex + 1, remainingArgs, 0, args.Length - 1 - cmdIndex);
             cmd.Execute(remainingArgs, ctx);
-        }
-
-        private static IPublishContext ConfigurePlugins(IContainer container)
-        {
-            Log.Debug("Registering Commands And Plugins");
-            var ctx = new PublishContext(container);
-            new DefaultCommandPlugin().OnLoad(ctx);
-
-            Log.Trace("Inspecting Runtime Libraries");
-            foreach(var library in DependencyResolver.GetCandidateLibraries(DependencyContext.Default))
-            {
-                Log.Trace("Inspecing library {0}", library.Name);
-                foreach(var assembly in library.RuntimeAssemblyGroups.SelectMany(g => g.AssetPaths))
-                {
-                    Log.Trace("Inspecting assembly {0}", assembly);
-                    var loadedAssembly = Assembly.Load(new AssemblyName(assembly.Replace(".dll", "")));
-
-                    foreach(var plugin in loadedAssembly.ExportedTypes.Where(t => typeof(IRocinantePlugin).IsAssignableFrom(t) && t.GetTypeInfo().IsClass))
-                    {
-                        Log.Debug("Loading Plugin {0}", plugin.FullName);
-                        ((IRocinantePlugin)container.Resolve(plugin)).OnLoad(ctx);
-                    }
-                }
-            }
-
-            var pluginPath = Path.Combine(Directory.GetCurrentDirectory(), "_plugins");
-            if(Directory.Exists(pluginPath))
-            {
-                Log.Trace("Loading downloaded plugins from {0}", pluginPath);
-            }
-
-            return ctx;
-        }
-
-        private static IContainer ConfigureDependencies()
-        {
-            var builder = new ContainerBuilder();
-
-            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-
-            return builder.Build();
-        }
-
-        private static void ConfigureLogging(LogLevel verbosity)
-        {
-            var config = new LoggingConfiguration();
-
-            var consoleTarget = new ColoredConsoleTarget();
-            config.AddTarget("console", consoleTarget);
-            consoleTarget.Layout = @"[${pad:padding=5:inner=${level:uppercase=true}}] [${logger}] ${message}";
-
-            var rule1 = new LoggingRule("*", verbosity, consoleTarget);
-            config.LoggingRules.Add(rule1);
-
-            LogManager.Configuration = config;
         }
 
         #region IDisposable Support
