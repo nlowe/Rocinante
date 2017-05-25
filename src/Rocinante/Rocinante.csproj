@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
@@ -13,5 +14,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Rocinante.Types/Rocinante.Types.csproj" />
+  </ItemGroup>
+
+  <!-- Default Plugins -->
+  <ItemGroup>
+    <ProjectReference Include="../Rocinante.Engine.Markdown/Rocinante.Engine.Markdown.csproj" />
+    <ProjectReference Include="../Rocinante.ThemeResolver.GitHub/Rocinante.ThemeResolver.GitHub.csproj" />
   </ItemGroup>
 </Project>
