@@ -35,9 +35,20 @@ namespace Rocinante.Types
         public string Root { get; set; } = "/";
 
         /// <summary>
+        /// The default markup to use for new posts and drafts
+        /// </summary>
+        public string DefaultMarkup { get; set; } = "md";
+
+        /// <summary>
         /// The directory to look in for posts, relative to the site configuration file
         /// </summary>
         public string PostSource { get; set; } = "posts";
+
+        /// <summary>
+        /// The directory to look in for drafts, relative to the site configuration file
+        /// </summary>
+        /// <returns></returns>
+        public string DraftSource { get; set; } = "_drafts";
 
         /// <summary>
         /// The directory to publish to if none is specified on the command line

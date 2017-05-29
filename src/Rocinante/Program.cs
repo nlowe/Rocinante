@@ -11,6 +11,7 @@ using NLog.Config;
 using NLog.Targets;
 using Rocinante.Commands;
 using Rocinante.Types;
+using Rocinante.Types.Extensions;
 
 namespace Rocinante
 {
@@ -66,7 +67,16 @@ namespace Rocinante
 
             var remainingArgs = new string[args.Length - 1 - cmdIndex];
             Array.Copy(args, cmdIndex + 1, remainingArgs, 0, args.Length - 1 - cmdIndex);
-            cmd.Execute(remainingArgs, ctx);
+
+            try
+            {
+                cmd.Execute(remainingArgs, ctx);
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal("{0} threw an exception: {1}\n{2}", cmd.Name, ex.AllInnerMessages(), ex.StackTrace);
+                Environment.Exit(ExitCodes.THE_WORLD_HAS_ENDED);
+            }
         }
 
         #region IDisposable Support

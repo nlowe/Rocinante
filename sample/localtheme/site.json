@@ -1,0 +1,12 @@
+{
+ "Plugins": {
+ },
+ "Name": "Example Site with Local Theme",
+ "Tagline": "",
+ "Author": "Rocinante Contributors",
+ "Theme": "_local_",
+ "Root": "/",
+ "PostSource": "posts",
+ "DefaultPublishLocation": "public",
+ "PostDateUrlFormat": "yyyy/MM"
+}

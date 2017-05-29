@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace Rocinante.Types.Extensions
 {
     public static class StringExtensions
@@ -11,5 +13,13 @@ namespace Rocinante.Types.Extensions
         public static string OrBlank(this string str) => str.IsNullOrWhiteSpace() ? null : str;
 
         public static string AppendIfMissing(this string str, string suffix) => str.EndsWith(suffix) ? str : str + suffix;
+
+        public static void MakeDirectoryIfNotExists(this string path)
+        {
+            if(!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
     }
 }
