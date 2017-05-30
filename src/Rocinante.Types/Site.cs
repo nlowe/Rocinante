@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Encodings.Web;
 using Rocinante.Types.Extensions;
 
 namespace Rocinante.Types
 {
-    public class Site
+    public partial class Site
     {
+        /// <summary>
+        /// The path to the site on disk
+        /// </summary>
+        public string Location { get; private set; }
+
         /// <summary>
         /// The name of the site
         /// </summary>
@@ -80,6 +86,36 @@ namespace Rocinante.Types
             return Root.AppendIfMissing("/") +
                 post.PublishedOn.ToString(PostDateUrlFormat).AppendIfMissing("/") +
                 UrlEncoder.Default.Encode(post.UrlTitle.OrBlank() ?? post.Title);
+        }
+
+        /// <summary>
+        /// A collection of all posts in the site
+        /// </summary>
+        public IEnumerable<Post> Posts()
+        {
+            foreach(var file in Directory.GetFiles(Path.Combine(Location, PostSource), "*.*", SearchOption.AllDirectories))
+            {
+                Post post;
+                if(PostParser.TryLoad(file, out post))
+                {
+                    yield return post;
+                }
+            }
+        }
+
+        /// <summary>
+        /// A collection of all drafts in the site
+        /// </summary>
+        public IEnumerable<Post> Drafts()
+        {
+            foreach(var file in Directory.GetFiles(Path.Combine(Location, DraftSource), "*.*", SearchOption.AllDirectories))
+            {
+                Post post;
+                if(PostParser.TryLoad(file, out post))
+                {
+                    yield return post;
+                }
+            }
         }
     }
 }

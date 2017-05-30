@@ -54,13 +54,22 @@ draft:
 
         private static void NewPostOrDraft(string[] args, IPublishContext ctx, string root, string siteFile)
         {
-            if (!File.Exists(siteFile))
+            Site site = null;
+            try
+            {
+                site = Site.LoadFrom(siteFile);
+            }
+            catch(NoSuchSiteException)
             {
                 Log.Fatal("There doesn't seem to be a rocinante site here. Did you run 'roci new site' ?");
                 Environment.Exit(ExitCodes.NO_SITE);
             }
 
-            var site = JSON.Deserialize<Site>(File.ReadAllText(siteFile));
+            if(site == null)
+            {
+                Log.Fatal("Failed to load site from {0}", siteFile);
+                Environment.Exit(ExitCodes.THE_WORLD_HAS_ENDED);
+            }
 
             string subPath = null;
             switch (args[0].ToLower())

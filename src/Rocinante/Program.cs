@@ -25,7 +25,7 @@ namespace Rocinante
         {
             var logLevel = LogLevel.Info;
             var cmdIndex = 0;
-
+            
             if(args.Length > 0)
             {
                 foreach(var arg in args)
