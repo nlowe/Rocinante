@@ -89,6 +89,14 @@ namespace Rocinante.Types
         }
 
         /// <summary>
+        /// The path to publish the post to
+        /// </summary>
+        public string PublishPathFor(Post post, string publishDir = null)
+        {
+            return Path.Combine(Location, publishDir ?? DefaultPublishLocation, post.PublishedOn.ToString(PostDateUrlFormat), $"{post.Title}.html");
+        }
+
+        /// <summary>
         /// A collection of all posts in the site
         /// </summary>
         public IEnumerable<Post> Posts()

@@ -12,7 +12,8 @@ namespace Rocinante.Commands
             ctx.UseCommand<HelpCommand>()
                .UseCommand<NewCommand>()
                .UseCommand<RestoreCommand>()
-               .UseCommand<InfoCommand>();
+               .UseCommand<InfoCommand>()
+               .UseCommand<PublishCommand>();
         }
     }
 }
