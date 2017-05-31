@@ -1,0 +1,9 @@
+@model Rocinante.Types.ViewModels.PostViewModel
+@{
+    ViewBag.Title = Model.Site.Name;
+    Layout = "_Layout.cshtml";
+}
+
+<div id="post">
+  @Model.RenderedPost
+</div>

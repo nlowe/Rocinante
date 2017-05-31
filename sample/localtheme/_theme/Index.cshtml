@@ -1,0 +1,13 @@
+@model Rocinante.Types.ViewModels.IndexViewModel
+@{
+    ViewBag.Title = Model.Site.Name;
+    Layout = "_Layout.cshtml";
+}
+
+<h1>This is the index page</h1>
+<ul>
+    @foreach(var post in Model.Site.Posts().OrderByDescending(p => p.PublishedOn))
+    {
+        <li><a href="@(Model.Site.UrlFor(post))">@(post.PublishedOn) - @(post.Title)</a></li>
+    }
+</ul>

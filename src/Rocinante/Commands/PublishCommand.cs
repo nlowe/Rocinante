@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Html;
 using NLog;
+using RazorLight;
 using Rocinante.Types;
 using Rocinante.Types.Extensions;
+using Rocinante.Types.ViewModels;
 
 namespace Rocinante.Commands
 {
@@ -54,7 +57,8 @@ only argument to the publish command.
                 Directory.Delete(publishDirectory, recursive: true);
             }
 
-            publishDirectory.MakeDirectoryIfNotExists();            
+            publishDirectory.MakeDirectoryIfNotExists();
+            var pageRenderer = EngineFactory.CreatePhysical(Path.Combine(root, "_theme"));
 
             Log.Info("Beginning publish for {0} at {1}", site.Name, publishDirectory);
             foreach(var post in site.Posts())
@@ -72,11 +76,28 @@ only argument to the publish command.
 
                 Log.Trace("Rendering {0} with {1}", post.Title, engine.GetType().FullName);
                 var src = engine.Render(post);
-                // TODO: hand off post to layout
+               
+                var model = new PostViewModel 
+                {
+                    Site = site,
+                    Post = post,
+                    RenderedPost = new HtmlString(src)
+                };
+               
+                var html = pageRenderer.Parse("Post.cshtml", model);
 
                 Log.Trace("Writing post {0}", post.Title);
-                File.WriteAllText(effectivePath, src);
+                File.WriteAllText(effectivePath, html);
             }
+
+            Log.Debug("Writing Index Page");
+            var indexModel = new IndexViewModel
+            {
+                Site = site
+            };
+
+            var index = pageRenderer.Parse("Index.cshtml", indexModel);
+            File.WriteAllText(Path.Combine(publishDirectory, "index.html"), index);
         }
     }
 }
