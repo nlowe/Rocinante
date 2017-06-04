@@ -4,6 +4,8 @@
     Layout = "_Layout.cshtml";
 }
 
+<h1>@Model.Post.Title</h1>
+
 <div id="post">
-  @Model.RenderedPost
+  @Model.Post.RenderedContent
 </div>

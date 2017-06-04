@@ -61,39 +61,30 @@ only argument to the publish command.
             var pageRenderer = EngineFactory.CreatePhysical(Path.Combine(root, "_theme"));
 
             Log.Info("Beginning publish for {0} at {1}", site.Name, publishDirectory);
-            foreach(var post in site.Posts())
+            foreach(var p in ctx.RenderedPosts(site))
             {
-                var effectivePath = site.PublishPathFor(post, args.Length == 0 ? null : args[0]);
+                var effectivePath = site.PublishPathFor(p, args.Length == 0 ? null : args[0]);
                 Path.GetDirectoryName(effectivePath).MakeDirectoryIfNotExists();
-                Log.Debug("Rendering {0} to {1}", post.Title, effectivePath);
+                Log.Debug("Rendering {0} to {1}", p.Title, effectivePath);
 
-                var engine = ctx.ContentEngines.FirstOrDefault(e => e.CanRender(post));
-                if(engine == null)
-                {
-                    Log.Fatal("Unable to find a content engine for markup {0}. Are you missing a plugin?", post.Markup);
-                    Environment.Exit(ExitCodes.NO_CONTENT_ENGINE);
-                }
-
-                Log.Trace("Rendering {0} with {1}", post.Title, engine.GetType().FullName);
-                var src = engine.Render(post);
-               
                 var model = new PostViewModel 
                 {
                     Site = site,
-                    Post = post,
-                    RenderedPost = new HtmlString(src)
+                    PublishContext = ctx,
+                    Post = p
                 };
                
                 var html = pageRenderer.Parse("Post.cshtml", model);
 
-                Log.Trace("Writing post {0}", post.Title);
+                Log.Trace("Writing post {0}", p.Title);
                 File.WriteAllText(effectivePath, html);
             }
 
             Log.Debug("Writing Index Page");
-            var indexModel = new IndexViewModel
+            var indexModel = new RocinanteViewModel
             {
-                Site = site
+                Site = site,
+                PublishContext = ctx
             };
 
             var index = pageRenderer.Parse("Index.cshtml", indexModel);

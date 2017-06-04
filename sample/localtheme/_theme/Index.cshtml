@@ -1,13 +1,39 @@
-@model Rocinante.Types.ViewModels.IndexViewModel
+@model Rocinante.Types.ViewModels.RocinanteViewModel
+@using Rocinante.Types.Extensions;
+
 @{
     ViewBag.Title = Model.Site.Name;
     Layout = "_Layout.cshtml";
 }
 
-<h1>This is the index page</h1>
-<ul>
-    @foreach(var post in Model.Site.Posts().OrderByDescending(p => p.PublishedOn))
-    {
-        <li><a href="@(Model.Site.UrlFor(post))">@(post.PublishedOn) - @(post.Title)</a></li>
-    }
-</ul>
+@if(!@Model.Site.Tagline.IsNullOrEmpty())
+{
+    <h1 class="center-align">@Model.Site.Tagline</h1>
+}
+
+@foreach(var post in Model.PublishContext.RenderedPosts(Model.Site).OrderByDescending(p => p.PublishedOn))
+{
+    <div class="row">
+        <div class="col s12">
+            <div class="card blue-grey darken-3">
+            <div class="card-content">
+                <a href="@(Model.Site.UrlFor(post))"><span class="card-title">@(post.PublishedOn.ToString("yyyy-MM-dd")) - @(post.Title)</span></a>
+                @if(post.PreviewContent != null)
+                {
+                    @post.PreviewContent
+                }
+                else
+                {
+                    @post.RenderedContent
+                }
+            </div>
+            @if(post.PreviewContent != null)
+            {
+                <div class="card-action">
+                    <a href="@(Model.Site.UrlFor(post))">More</a>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+}

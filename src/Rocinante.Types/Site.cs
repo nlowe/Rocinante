@@ -72,6 +72,11 @@ namespace Rocinante.Types
         public Dictionary<string, string> Plugins { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
+        /// Remove the first H1 from posts, which is often the same as the title from the frontmatter
+        /// </summary>
+        public bool TrimFirstH1 { get; set; } = true;
+
+        /// <summary>
         /// Resolve the author for the post
         /// </summary>
         /// <param name="post">The post to resolve the author for</param>
@@ -85,7 +90,7 @@ namespace Rocinante.Types
         {
             return Root.AppendIfMissing("/") +
                 post.PublishedOn.ToString(PostDateUrlFormat).AppendIfMissing("/") +
-                UrlEncoder.Default.Encode(post.UrlTitle.OrBlank() ?? post.Title);
+                UrlEncoder.Default.Encode(post.UrlTitle.OrBlank() ?? post.Title) + ".html";
         }
 
         /// <summary>

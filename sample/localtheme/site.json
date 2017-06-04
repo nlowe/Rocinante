@@ -1,11 +1,11 @@
 {
  "Plugins": {
  },
- "Name": "Example Site with Local Theme",
- "Tagline": "",
+ "Name": "Rocinante",
+ "Tagline": "Simple, static-site generation in dotnet core",
  "Author": "Rocinante Contributors",
  "Theme": "_local_",
- "Root": "/",
+ "Root": "./",
  "PostSource": "posts",
  "DefaultPublishLocation": "public",
  "PostDateUrlFormat": "yyyy/MM"

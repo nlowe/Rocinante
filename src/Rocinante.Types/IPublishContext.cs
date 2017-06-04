@@ -34,5 +34,10 @@ namespace Rocinante.Types
         /// Register the specified type as a command
         /// </summary>
         IPublishContext UseCommand<T>() where T : ICommand;
+
+        /// <summary>
+        /// Process and return all posts for the site
+        /// </summary>
+        IEnumerable<RenderedPost> RenderedPosts(Site site);
     }
 }

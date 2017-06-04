@@ -25,7 +25,7 @@ namespace Rocinante.Types
         /// Render the specified post to html
         /// </summary>
         /// <param name="post">The post to render</param>
-        /// <returns>The html representation of the post</returns>
-        string Render(Post post);
+        /// <returns>The processed post</returns>
+        RenderedPost Render(Post post);
     }
 }
